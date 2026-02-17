@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#e94560" />
+  <meta name="description" content="Track your daily planking exercises" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="apple-touch-icon" href="icons/icon-192.png" />
+  <title>Plank Tracker</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="app">
+    <header>
+      <h1>🏋️ Plank Tracker</h1>
+    </header>
+
+    <main>
+      <!-- Timer Section -->
+      <section class="timer-section">
+        <div class="timer-ring">
+          <svg viewBox="0 0 200 200">
+            <circle class="timer-bg" cx="100" cy="100" r="90" />
+            <circle class="timer-progress" cx="100" cy="100" r="90" />
+          </svg>
+          <div class="timer-display">
+            <div class="timer-time"><span id="minutes">00</span>:<span id="seconds">00</span></div>
+            <div class="timer-ms" id="milliseconds">.00</div>
+          </div>
+        </div>
+
+        <button id="toggleBtn" class="btn-toggle" aria-label="Start or stop timer">
+          <span class="btn-icon" id="btnIcon">▶</span>
+          <span class="btn-label" id="btnLabel">START</span>
+        </button>
+      </section>
+
+      <!-- Stats Section -->
+      <section class="stats-section">
+        <div class="stat-card">
+          <div class="stat-value" id="todayCount">0</div>
+          <div class="stat-label">Today</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="bestTime">00:00</div>
+          <div class="stat-label">Best</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="totalSessions">0</div>
+          <div class="stat-label">Total</div>
+        </div>
+      </section>
+
+      <!-- Chart Section -->
+      <section class="chart-section">
+        <h2>Daily Overview</h2>
+        <div class="chart-container">
+          <div class="chart-y-axis" id="chartYAxis"></div>
+          <div class="chart-bars" id="chartBars">
+            <p class="empty-state">No data to chart yet.</p>
+          </div>
+        </div>
+        <div class="chart-legend">
+          <span class="legend-dot best"></span> Best plank
+          <span class="legend-dot total"></span> Total time
+        </div>
+      </section>
+
+      <!-- History Section -->
+      <section class="history-section">
+        <h2>Exercise History</h2>
+        <div id="historyList" class="history-list">
+          <p class="empty-state">No exercises recorded yet. Start planking!</p>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
