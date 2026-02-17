@@ -338,6 +338,21 @@ window.addEventListener('appinstalled', () => {
   deferredPrompt = null;
 });
 
+// ── Delete Data ───────────────────────────────────────
+const deleteDataBtn = document.getElementById('deleteDataBtn');
+
+deleteDataBtn.addEventListener('click', () => {
+  if (!confirm('⚠️ Are you sure? This will delete all your exercise history and cannot be undone.')) {
+    return;
+  }
+  if (!confirm('❌ Last chance! Delete all data permanently?')) {
+    return;
+  }
+
+  localStorage.clear();
+  location.reload();
+});
+
 // ── Init ──────────────────────────────────────────────
 updateDisplay();
 renderStats();

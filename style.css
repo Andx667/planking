@@ -551,10 +551,19 @@ header h1 {
 
 /* ── Footer ────────────────────────────────────────── */
 .app-footer {
-  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
   padding: 1.5rem 0 0.5rem;
   font-size: 0.8rem;
   color: var(--text-dim);
+}
+
+.footer-links {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .app-footer a {
@@ -569,4 +578,27 @@ header h1 {
 
 .footer-sep {
   margin: 0 0.4rem;
+}
+
+.footer-delete-btn {
+  background: none;
+  border: 1px solid #d63a54;
+  color: #d63a54;
+  border-radius: 6px;
+  padding: 0.35rem 0.8rem;
+  font-size: 0.7rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.footer-delete-btn:hover {
+  background: #d63a54;
+  color: #fff;
+}
+
+.footer-delete-btn:active {
+  transform: scale(0.95);
 }
