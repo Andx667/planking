@@ -263,6 +263,47 @@ if ('serviceWorker' in navigator) {
   });
 }
 
+// ── PWA Install Prompt ────────────────────────────────
+let deferredPrompt = null;
+const installBanner = document.getElementById('installBanner');
+const installAccept = document.getElementById('installAccept');
+const installDismiss = document.getElementById('installDismiss');
+const INSTALL_DISMISSED_KEY = 'plank_install_dismissed';
+
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+
+  // Don't show if user dismissed recently (within 7 days)
+  const dismissed = localStorage.getItem(INSTALL_DISMISSED_KEY);
+  if (dismissed && Date.now() - Number(dismissed) < 7 * 24 * 60 * 60 * 1000) {
+    return;
+  }
+
+  installBanner.hidden = false;
+});
+
+installAccept.addEventListener('click', async () => {
+  if (!deferredPrompt) return;
+  deferredPrompt.prompt();
+  const { outcome } = await deferredPrompt.userChoice;
+  console.log('Install outcome:', outcome);
+  deferredPrompt = null;
+  installBanner.hidden = true;
+});
+
+installDismiss.addEventListener('click', () => {
+  installBanner.hidden = true;
+  localStorage.setItem(INSTALL_DISMISSED_KEY, String(Date.now()));
+  deferredPrompt = null;
+});
+
+// Hide banner if app gets installed
+window.addEventListener('appinstalled', () => {
+  installBanner.hidden = true;
+  deferredPrompt = null;
+});
+
 // ── Init ──────────────────────────────────────────────
 updateDisplay();
 renderStats();
