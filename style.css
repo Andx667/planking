@@ -548,3 +548,25 @@ header h1 {
     transform: translateY(0);
   }
 }
+
+/* ── Footer ────────────────────────────────────────── */
+.app-footer {
+  text-align: center;
+  padding: 1.5rem 0 0.5rem;
+  font-size: 0.8rem;
+  color: var(--text-dim);
+}
+
+.app-footer a {
+  color: var(--text-dim);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.app-footer a:hover {
+  color: var(--accent);
+}
+
+.footer-sep {
+  margin: 0 0.4rem;
+}
