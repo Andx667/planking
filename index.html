@@ -23,7 +23,10 @@
           <svg viewBox="0 0 200 200">
             <circle class="timer-bg" cx="100" cy="100" r="90" />
             <circle class="timer-progress" cx="100" cy="100" r="90" />
+            <!-- 20s target marker (120° from top = 20/60 of 360°) -->
+            <circle class="target-marker" id="targetMarker" cx="100" cy="100" r="90" />
           </svg>
+          <div class="target-label" id="targetLabel">Target: 0:20</div>
           <div class="timer-display">
             <div class="timer-time"><span id="minutes">00</span>:<span id="seconds">00</span></div>
             <div class="timer-ms" id="milliseconds">.00</div>

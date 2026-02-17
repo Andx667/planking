@@ -15,16 +15,20 @@ const todayCountEl = document.getElementById('todayCount');
 const bestTimeEl = document.getElementById('bestTime');
 const totalSessionsEl = document.getElementById('totalSessions');
 const historyList = document.getElementById('historyList');
+const targetMarker = document.getElementById('targetMarker');
+const targetLabel = document.getElementById('targetLabel');
 
 // ── Constants ─────────────────────────────────────────
 const STORAGE_KEY = 'plank_history';
 const CIRCLE_LENGTH = 2 * Math.PI * 90; // ≈ 565.48
+const TARGET_SECONDS = 20;
 
 // ── State ─────────────────────────────────────────────
 let running = false;
 let startTime = 0;
 let elapsed = 0;
 let animFrameId = null;
+let targetReached = false;
 
 // ── Helpers ───────────────────────────────────────────
 function pad(n, d = 2) {
@@ -42,6 +46,21 @@ function todayKey() {
   return new Date().toISOString().slice(0, 10); // YYYY-MM-DD
 }
 
+function isFirstPlankToday() {
+  const history = loadHistory();
+  const today = todayKey();
+  return !history.some((h) => h.date.startsWith(today));
+}
+
+function showTarget(visible) {
+  targetMarker.classList.toggle('visible', visible);
+  targetLabel.classList.toggle('visible', visible);
+  if (!visible) {
+    targetLabel.classList.remove('reached');
+    targetLabel.textContent = 'Target: 0:20';
+  }
+}
+
 // ── Timer ─────────────────────────────────────────────
 function updateDisplay() {
   const total = elapsed;
@@ -56,6 +75,15 @@ function updateDisplay() {
   // Progress ring: full revolution every 60 s
   const frac = (total % 60000) / 60000;
   progressCircle.style.strokeDashoffset = CIRCLE_LENGTH * (1 - frac);
+
+  // Check target
+  if (running && !targetReached && targetMarker.classList.contains('visible')) {
+    if (total >= TARGET_SECONDS * 1000) {
+      targetReached = true;
+      targetLabel.textContent = '✓ Target reached!';
+      targetLabel.classList.add('reached');
+    }
+  }
 }
 
 function tick() {
@@ -68,9 +96,14 @@ function startTimer() {
   running = true;
   startTime = Date.now();
   elapsed = 0;
+  targetReached = false;
   toggleBtn.classList.add('running');
   btnIcon.textContent = '⏹';
   btnLabel.textContent = 'STOP';
+
+  // Show target indicator for the first plank of the day
+  showTarget(isFirstPlankToday());
+
   tick();
 }
 
@@ -90,6 +123,7 @@ function stopTimer() {
     elapsed = 0;
     updateDisplay();
     progressCircle.style.strokeDashoffset = CIRCLE_LENGTH;
+    showTarget(false);
   }, 1500);
 }
 

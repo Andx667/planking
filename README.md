@@ -23,7 +23,7 @@ Then open `http://localhost:8000` in your browser.
 
 ## Project Structure
 
-```
+```log
 ├── index.html        # App shell
 ├── style.css         # Styles (dark theme, responsive)
 ├── app.js            # Timer, history, chart, persistence
