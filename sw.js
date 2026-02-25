@@ -3,7 +3,7 @@
    Caching for offline support
    ────────────────────────────────────────────────────── */
 
-const CACHE_NAME = 'plank-tracker-v2';
+const CACHE_NAME = 'plank-tracker-v3';
 const ASSETS = [
   './',
   './index.html',
