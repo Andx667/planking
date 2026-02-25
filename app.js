@@ -17,11 +17,60 @@ const totalSessionsEl = document.getElementById('totalSessions');
 const historyList = document.getElementById('historyList');
 const targetMarker = document.getElementById('targetMarker');
 const targetLabel = document.getElementById('targetLabel');
+const themeToggle = document.getElementById('themeToggle');
 
 // ── Constants ─────────────────────────────────────────
 const STORAGE_KEY = 'plank_history';
 const CIRCLE_LENGTH = 2 * Math.PI * 90; // ≈ 565.48
 const TARGET_SECONDS = 20;
+const THEME_KEY = 'plank_theme'; // 'light', 'dark', or 'system'
+
+// ── Theme Management ──────────────────────────────────
+function getSystemTheme() {
+  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+}
+
+function getSavedTheme() {
+  return localStorage.getItem(THEME_KEY);
+}
+
+function getActiveTheme() {
+  const saved = getSavedTheme();
+  return saved || getSystemTheme();
+}
+
+function applyTheme(theme) {
+  const html = document.documentElement;
+  html.classList.remove('light-theme', 'dark-theme');
+  if (theme === 'light') {
+    html.classList.add('light-theme');
+    themeToggle.textContent = '🌞';
+  } else {
+    html.classList.add('dark-theme');
+    themeToggle.textContent = '🌙';
+  }
+}
+
+function toggleTheme() {
+  const current = getActiveTheme();
+  const next = current === 'dark' ? 'light' : 'dark';
+  localStorage.setItem(THEME_KEY, next);
+  applyTheme(next);
+}
+
+themeToggle.addEventListener('click', toggleTheme);
+
+// Initialize theme on page load
+window.addEventListener('DOMContentLoaded', () => {
+  const activeTheme = getActiveTheme();
+  applyTheme(activeTheme);
+});
+
+// Also apply theme immediately if DOM is already loaded
+if (document.readyState !== 'loading') {
+  const activeTheme = getActiveTheme();
+  applyTheme(activeTheme);
+}
 
 // ── State ─────────────────────────────────────────────
 let running = false;
