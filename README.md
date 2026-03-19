@@ -2,6 +2,8 @@
 
 A progressive web app to track your planking exercises. Built with plain HTML, CSS, and JavaScript — no frameworks, no dependencies.
 
+[![Smoke Test](https://github.com/Andx667/planking/actions/workflows/smoke-test.yml/badge.svg)](https://github.com/Andx667/planking/actions/workflows/smoke-test.yml)
+
 ## Features
 
 - **One-tap timer** — Start and stop with a single button press. Displays minutes, seconds, and centiseconds with an animated progress ring.
