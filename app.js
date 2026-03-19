@@ -335,10 +335,43 @@ function renderChart() {
 // ── Service Worker Registration ───────────────────────
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
+    let refreshing = false;
+
+    const promptForAppUpdate = (registration) => {
+      const waitingWorker = registration.waiting;
+      if (!waitingWorker) return;
+
+      const shouldUpdate = confirm('A new version is available. Update now?');
+      if (shouldUpdate) {
+        waitingWorker.postMessage({ type: 'SKIP_WAITING' });
+      }
+    };
+
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      if (refreshing) return;
+      refreshing = true;
+      window.location.reload();
+    });
+
     navigator.serviceWorker
       .register('sw.js')
       .then((reg) => {
         console.log('Service Worker registered:', reg.scope);
+
+        if (reg.waiting) {
+          promptForAppUpdate(reg);
+        }
+
+        reg.addEventListener('updatefound', () => {
+          const newWorker = reg.installing;
+          if (!newWorker) return;
+
+          newWorker.addEventListener('statechange', () => {
+            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+              promptForAppUpdate(reg);
+            }
+          });
+        });
       })
       .catch((err) => {
         console.warn('SW registration failed:', err);
@@ -398,7 +431,9 @@ deleteDataBtn.addEventListener('click', () => {
     return;
   }
 
-  localStorage.clear();
+  [STORAGE_KEY, THEME_KEY, INSTALL_DISMISSED_KEY].forEach((key) => {
+    localStorage.removeItem(key);
+  });
   location.reload();
 });
 
