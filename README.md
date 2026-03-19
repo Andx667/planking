@@ -21,6 +21,24 @@ python -m http.server 8000
 
 Then open `http://localhost:8000` in your browser.
 
+## Smoke Test Script
+
+Run the smoke test script to validate required files, key PWA wiring, and manifest fields.
+
+Local project checks:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\smoke-test.ps1
+```
+
+Optional HTTP checks against a deployed or served URL:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\smoke-test.ps1 -BaseUrl http://localhost:8000
+```
+
+The CI workflow runs the local smoke test automatically on pushes and pull requests.
+
 ## Project Structure
 
 ```log
