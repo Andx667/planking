@@ -1,8 +1,11 @@
 {
+  "id": "/",
   "name": "Plank Tracker",
   "short_name": "Plank",
+  "lang": "en",
   "description": "Track your daily planking exercises",
-  "start_url": ".",
+  "start_url": "./",
+  "scope": "./",
   "display": "standalone",
   "background_color": "#1a1a2e",
   "theme_color": "#e94560",

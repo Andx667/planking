@@ -35,3 +35,14 @@ Then open `http://localhost:8000` in your browser.
 ## Data Storage
 
 All exercise data is stored in the browser's `localStorage`. No server or account required.
+
+## Release Maintenance Checklist
+
+Before publishing a new version, run this quick checklist:
+
+- Update `CACHE_NAME` in `sw.js` when app shell assets or caching logic change.
+- Confirm `ASSETS` in `sw.js` includes every required local file for offline boot.
+- Verify update flow: open an existing install, deploy a change, and confirm the app shows an update prompt.
+- Accept the update prompt and confirm the app reloads once into the new version.
+- Toggle light/dark mode and verify browser UI color updates to match the active theme.
+- Validate installability (manifest loads, icons resolve, app installs as standalone).

@@ -24,6 +24,10 @@ const STORAGE_KEY = 'plank_history';
 const CIRCLE_LENGTH = 2 * Math.PI * 90; // ≈ 565.48
 const TARGET_SECONDS = 20;
 const THEME_KEY = 'plank_theme'; // 'light', 'dark', or 'system'
+const THEME_COLORS = {
+  dark: '#1a1a2e',
+  light: '#f5f5f7',
+};
 
 // ── Theme Management ──────────────────────────────────
 function getSystemTheme() {
@@ -39,6 +43,12 @@ function getActiveTheme() {
   return saved || getSystemTheme();
 }
 
+function updateThemeColor(theme) {
+  const themeColorMeta = document.querySelector('meta[name="theme-color"]');
+  if (!themeColorMeta) return;
+  themeColorMeta.setAttribute('content', THEME_COLORS[theme] || THEME_COLORS.dark);
+}
+
 function applyTheme(theme) {
   const html = document.documentElement;
   html.classList.remove('light-theme', 'dark-theme');
@@ -49,6 +59,7 @@ function applyTheme(theme) {
     html.classList.add('dark-theme');
     themeToggle.textContent = '🌙';
   }
+  updateThemeColor(theme);
 }
 
 function toggleTheme() {
