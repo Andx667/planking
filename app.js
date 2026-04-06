@@ -22,7 +22,7 @@ const themeToggle = document.getElementById('themeToggle');
 // ── Constants ─────────────────────────────────────────
 const STORAGE_KEY = 'plank_history';
 const CIRCLE_LENGTH = 2 * Math.PI * 90; // ≈ 565.48
-const TARGET_SECONDS = 20;
+const DEFAULT_TARGET_SECONDS = 20;
 const THEME_KEY = 'plank_theme'; // 'light', 'dark', or 'system'
 const THEME_COLORS = {
   dark: '#1a1a2e',
@@ -89,6 +89,7 @@ let startTime = 0;
 let elapsed = 0;
 let animFrameId = null;
 let targetReached = false;
+let currentTarget = DEFAULT_TARGET_SECONDS; // updated each time the timer starts
 
 // ── Helpers ───────────────────────────────────────────
 function pad(n, d = 2) {
@@ -112,13 +113,29 @@ function isFirstPlankToday() {
   return !history.some((h) => h.date.startsWith(today));
 }
 
+// Compute an adaptive goal: 10% above the average of the last 5 sessions,
+// rounded up to the nearest second, with a floor of DEFAULT_TARGET_SECONDS.
+// Falls back to the default when fewer than 3 sessions exist.
+function computeTarget() {
+  const history = loadHistory();
+  if (history.length < 3) return DEFAULT_TARGET_SECONDS;
+  const recent = history.slice(0, 5);
+  const avgDurationMs = recent.reduce((sum, h) => sum + h.duration, 0) / recent.length;
+  return Math.max(DEFAULT_TARGET_SECONDS, Math.ceil((avgDurationMs / 1000) * 1.1));
+}
+
 function showTarget(visible) {
+  if (visible) {
+    // Position marker within a single 60-second revolution; cap at 60 s for targets beyond one full revolution
+    const targetFrac = Math.min(currentTarget, 60) / 60;
+    targetMarker.style.strokeDashoffset = `${CIRCLE_LENGTH * (1 - targetFrac)}`;
+    targetLabel.textContent = `Target: ${formatDuration(currentTarget * 1000)}`;
+  } else {
+    targetLabel.classList.remove('reached');
+    targetLabel.textContent = `Target: ${formatDuration(currentTarget * 1000)}`;
+  }
   targetMarker.classList.toggle('visible', visible);
   targetLabel.classList.toggle('visible', visible);
-  if (!visible) {
-    targetLabel.classList.remove('reached');
-    targetLabel.textContent = 'Target: 0:20';
-  }
 }
 
 // ── Timer ─────────────────────────────────────────────
@@ -138,7 +155,7 @@ function updateDisplay() {
 
   // Check target
   if (running && !targetReached && targetMarker.classList.contains('visible')) {
-    if (total >= TARGET_SECONDS * 1000) {
+    if (total >= currentTarget * 1000) {
       targetReached = true;
       targetLabel.textContent = '✓ Target reached!';
       targetLabel.classList.add('reached');
@@ -157,6 +174,7 @@ function startTimer() {
   startTime = Date.now();
   elapsed = 0;
   targetReached = false;
+  currentTarget = computeTarget();
   toggleBtn.classList.add('running');
   btnIcon.textContent = '⏹';
   btnLabel.textContent = 'STOP';
@@ -449,6 +467,7 @@ deleteDataBtn.addEventListener('click', () => {
 });
 
 // ── Init ──────────────────────────────────────────────
+currentTarget = computeTarget();
 updateDisplay();
 renderStats();
 renderChart();
