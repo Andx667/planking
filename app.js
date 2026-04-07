@@ -18,6 +18,8 @@ const historyList = document.getElementById('historyList');
 const targetMarker = document.getElementById('targetMarker');
 const targetLabel = document.getElementById('targetLabel');
 const themeToggle = document.getElementById('themeToggle');
+const srStatus = document.getElementById('srStatus');
+const chartSummary = document.getElementById('chartSummary');
 
 // ── Constants ─────────────────────────────────────────
 const STORAGE_KEY = 'plank_history';
@@ -138,6 +140,11 @@ function showTarget(visible) {
   targetLabel.classList.toggle('visible', visible);
 }
 
+function announceStatus(message) {
+  if (!srStatus) return;
+  srStatus.textContent = message;
+}
+
 // ── Timer ─────────────────────────────────────────────
 function updateDisplay() {
   const total = elapsed;
@@ -176,8 +183,10 @@ function startTimer() {
   targetReached = false;
   currentTarget = computeTarget();
   toggleBtn.classList.add('running');
+  toggleBtn.setAttribute('aria-pressed', 'true');
   btnIcon.textContent = '⏹';
   btnLabel.textContent = 'STOP';
+  announceStatus(`Timer started. Target is ${formatDuration(currentTarget * 1000)}.`);
 
   // Show target indicator for the first plank of the day
   showTarget(isFirstPlankToday());
@@ -189,8 +198,12 @@ function stopTimer() {
   running = false;
   cancelAnimationFrame(animFrameId);
   toggleBtn.classList.remove('running');
+  toggleBtn.setAttribute('aria-pressed', 'false');
   btnIcon.textContent = '▶';
   btnLabel.textContent = 'START';
+
+  const finalElapsed = elapsed;
+  announceStatus(`Timer stopped at ${formatDuration(finalElapsed)}.`);
 
   if (elapsed >= 1000) {
     saveSession(elapsed);
@@ -318,6 +331,9 @@ function renderChart() {
   if (days.length === 0) {
     chartBars.innerHTML = '<p class="empty-state">No data to chart yet.</p>';
     chartYAxis.innerHTML = '';
+    if (chartSummary) {
+      chartSummary.textContent = 'No chart data yet.';
+    }
     return;
   }
 
@@ -347,8 +363,9 @@ function renderChart() {
     const dt = new Date(d.day + 'T00:00:00');
     const dayLabel = `${weekdays[dt.getDay()]} ${dt.getDate()}`;
 
+    const barLabel = `${dayLabel}. Best ${formatDuration(d.best)}. Total ${formatDuration(d.total)}.`;
     barsHtml += `
-      <div class="chart-col"
+      <div class="chart-col" role="listitem" tabindex="0" aria-label="${barLabel}"
            title="Best: ${formatDuration(d.best)}  Total: ${formatDuration(d.total)}">
         <div class="chart-bar-group">
           <div class="chart-bar best" style="height:${Math.max(2, bestH)}px"></div>
@@ -359,6 +376,15 @@ function renderChart() {
   });
 
   chartBars.innerHTML = barsHtml;
+  if (chartSummary) {
+    chartSummary.textContent = days
+      .map((d) => {
+        const dt = new Date(d.day + 'T00:00:00');
+        const dayLabel = `${weekdays[dt.getDay()]} ${dt.getDate()}`;
+        return `${dayLabel}: best ${formatDuration(d.best)}, total ${formatDuration(d.total)}`;
+      })
+      .join('. ');
+  }
 }
 
 // ── Service Worker Registration ───────────────────────
@@ -426,6 +452,8 @@ window.addEventListener('beforeinstallprompt', (e) => {
   }
 
   installBanner.hidden = false;
+  installBanner.focus();
+  announceStatus('Install banner shown.');
 });
 
 installAccept.addEventListener('click', async () => {
@@ -435,18 +463,21 @@ installAccept.addEventListener('click', async () => {
   console.log('Install outcome:', outcome);
   deferredPrompt = null;
   installBanner.hidden = true;
+  announceStatus(outcome === 'accepted' ? 'Install accepted.' : 'Install dismissed.');
 });
 
 installDismiss.addEventListener('click', () => {
   installBanner.hidden = true;
   localStorage.setItem(INSTALL_DISMISSED_KEY, String(Date.now()));
   deferredPrompt = null;
+  announceStatus('Install prompt dismissed.');
 });
 
 // Hide banner if app gets installed
 window.addEventListener('appinstalled', () => {
   installBanner.hidden = true;
   deferredPrompt = null;
+  announceStatus('App installed.');
 });
 
 // ── Delete Data ───────────────────────────────────────
@@ -463,11 +494,13 @@ deleteDataBtn.addEventListener('click', () => {
   [STORAGE_KEY, THEME_KEY, INSTALL_DISMISSED_KEY].forEach((key) => {
     localStorage.removeItem(key);
   });
+  announceStatus('All local data deleted. Reloading app.');
   location.reload();
 });
 
 // ── Init ──────────────────────────────────────────────
 currentTarget = computeTarget();
+toggleBtn.setAttribute('aria-pressed', 'false');
 updateDisplay();
 renderStats();
 renderChart();

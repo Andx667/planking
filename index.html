@@ -17,6 +17,8 @@
       <button id="themeToggle" class="theme-toggle" aria-label="Toggle dark/light theme">🌙</button>
     </header>
 
+    <p id="srStatus" class="sr-only" aria-live="polite" aria-atomic="true"></p>
+
     <main>
       <!-- Timer Section -->
       <section class="timer-section">
@@ -28,7 +30,7 @@
             <circle class="target-marker" id="targetMarker" cx="100" cy="100" r="90" />
           </svg>
           <div class="target-label" id="targetLabel">Target: 0:20</div>
-          <div class="timer-display">
+          <div class="timer-display" role="timer" aria-live="off" aria-label="Elapsed plank time">
             <div class="timer-time"><span id="minutes">00</span>:<span id="seconds">00</span></div>
             <div class="timer-ms" id="milliseconds">.00</div>
           </div>
@@ -61,10 +63,11 @@
         <h2>Daily Overview</h2>
         <div class="chart-container">
           <div class="chart-y-axis" id="chartYAxis"></div>
-          <div class="chart-bars" id="chartBars">
+          <div class="chart-bars" id="chartBars" role="list" aria-label="Daily plank chart">
             <p class="empty-state">No data to chart yet.</p>
           </div>
         </div>
+        <p id="chartSummary" class="sr-only" aria-live="polite" aria-atomic="true">No chart data yet.</p>
         <div class="chart-legend">
           <span class="legend-dot best"></span> Best plank
           <span class="legend-dot total"></span> Total time
@@ -82,18 +85,18 @@
 
     <footer class="app-footer">
       <div class="footer-links">
-        <a href="https://github.com/Andx667/planking" target="_blank" rel="noopener">GitHub</a>
+        <a href="https://github.com/Andx667/planking" target="_blank" rel="noopener">GitHub <span class="sr-only">(opens in new tab)</span></a>
         <span class="footer-sep">·</span>
-        <a href="https://github.com/Andx667/planking/blob/main/LICENSE" target="_blank" rel="noopener">MIT License</a>
+        <a href="https://github.com/Andx667/planking/blob/main/LICENSE" target="_blank" rel="noopener">MIT License <span class="sr-only">(opens in new tab)</span></a>
         <span class="footer-sep">·</span>
-        <a href="https://buymeacoffee.com/andx667" target="_blank" rel="noopener">☕ Buy me a coffee</a>
+        <a href="https://buymeacoffee.com/andx667" target="_blank" rel="noopener">☕ Buy me a coffee <span class="sr-only">(opens in new tab)</span></a>
       </div>
       <button id="deleteDataBtn" class="footer-delete-btn" aria-label="Delete all local data">Delete Data</button>
     </footer>
   </div>
 
   <!-- PWA Install Banner -->
-  <div class="install-banner" id="installBanner" hidden>
+  <div class="install-banner" id="installBanner" hidden role="region" aria-label="Install app" tabindex="-1">
     <div class="install-banner-content">
       <div class="install-banner-icon">🏋️</div>
       <div class="install-banner-text">
